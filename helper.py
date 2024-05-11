@@ -1,7 +1,7 @@
 from random import randint
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 from torch import zeros
-
+from math import ceil
 
 class Dataset(Dataset):
     def __init__(self, x, y):
@@ -50,7 +50,7 @@ def dict_lists_to_list_of_dicts(input_dict:dict):
 
     return list_of_dicts
 
-def get_dataloader(x, y, batch_size, test_buckets = []):
+def get_train_valdiation_test_split(x, test_buckets = []):
     BUCKETS = 10
 
     N_ELEMENTS = len(x)
@@ -61,8 +61,7 @@ def get_dataloader(x, y, batch_size, test_buckets = []):
 
 
     x_local = x.copy()
-    y_local = y.copy()
-    x_test, y_test = [], []
+    x_test = []
     
     if len(test_buckets) == 0: 
         for _ in range(TEST_BUCKETS):
@@ -75,18 +74,12 @@ def get_dataloader(x, y, batch_size, test_buckets = []):
         idx = bucket * BUCKET_SIZE
         for _ in range(BUCKET_SIZE):
             x_test.append(x_local.pop(idx))
-            y_test.append(y_local.pop(idx))
 
-    train_elements = (len(y_local) // 10) * 9
+    train_elements = ceil((len(x_local) / 10) * 9)
     x_train = x_local[:train_elements]
-    y_train = y_local[:train_elements]
 
     x_validation = x_local[train_elements:]
-    y_validation = y_local[train_elements:]
 
-    train_dataset, val_dataset, test_dataset = Dataset(x_train, y_train), Dataset(x_validation, y_validation), Dataset(x_test, y_test)
     
-    return (DataLoader(train_dataset, batch_size=batch_size, shuffle=True), 
-            DataLoader(val_dataset, batch_size=batch_size), 
-            DataLoader(test_dataset, batch_size=batch_size)) 
+    return (x_train, x_validation, x_test)
 

@@ -4,7 +4,7 @@ from typing import Any, Tuple, Callable
 from sys import stdout
 
 class In_between_epochs:
-    def __call__(self, model:torch.nn.Module, loaders:dict[str,torch.utils.data.DataLoader], device:'torch.device|str', output_extraction_function:Callable) -> bool:
+    def __call__(self, model:torch.nn.Module, loaders:dict[str,torch.utils.data.DataLoader], device:'torch.device|str', output_extraction_function:Callable, losses:dict[str, float]) -> bool:
       raise NotImplementedError("Subclass must implement abstract method")
 
 class NeuralNetwork(nn.Module):
@@ -124,14 +124,15 @@ class NeuralNetwork(nn.Module):
           print()
 
         loaders = {"train": train_loader, "validation": validation_loader}
+        losses = {"train": float(train_loss_history[-1]), "validation": float(val_loss_history[-1])}
         for in_between in in_between_epochs.keys():
-            result = in_between_epochs[in_between](self, loaders, device, output_extraction_function)
+            result = in_between_epochs[in_between](self, loaders, device, output_extraction_function, losses)
 
             if not type(result) == bool:
                 raise Exception(f"in between {in_between} returned a non-boolean result: {result}")
             elif result:
                 if verbose:
-                    print(f"stopping after {epochs} epochs because of in between {in_between}")
+                    print(f"stopping after {epoch + 1} epochs because of in between {in_between}")
 
                 train_metrics_scores['loss'] = train_loss_history
                 val_metrics_scores['loss'] = val_loss_history
