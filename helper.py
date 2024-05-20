@@ -51,7 +51,7 @@ def dict_lists_to_list_of_dicts(input_dict:dict):
     return list_of_dicts
 
 def get_train_valdiation_test_split(x, test_buckets = []):
-    BUCKETS = 10
+    BUCKETS = 5
 
     N_ELEMENTS = len(x)
 
@@ -75,7 +75,7 @@ def get_train_valdiation_test_split(x, test_buckets = []):
         for _ in range(BUCKET_SIZE):
             x_test.append(x_local.pop(idx))
 
-    train_elements = ceil((len(x_local) / 10) * 9)
+    train_elements = ceil((len(x_local) / 10) * 8)
     x_train = x_local[:train_elements]
 
     x_validation = x_local[train_elements:]
