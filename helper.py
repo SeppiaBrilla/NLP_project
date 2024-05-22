@@ -76,10 +76,14 @@ def get_train_valdiation_test_split(x, test_buckets = []):
             x_test.append(x_local.pop(idx))
 
     train_elements = ceil((len(x_local) / 10) * 8)
-    x_train = x_local[:train_elements]
-
-    x_validation = x_local[train_elements:]
-
+    validation_elements = len(x_local) - train_elements
+    x_trains = []
+    x_validations = []
+    for i in range(5):
+        val_start = i * validation_elements
+        val_end = (i+1) * validation_elements
+        x_trains.append(x_local[:val_start] + x_local[val_end:])
+        x_validations.append(x_local[val_start:val_end])
     
-    return (x_train, x_validation, x_test)
+    return [(x_trains[i], x_validations[i], x_test) for i in range(5)]
 
