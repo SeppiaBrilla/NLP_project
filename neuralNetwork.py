@@ -92,7 +92,7 @@ class NeuralNetwork(nn.Module):
               optimizer.zero_grad()
               if verbose:
                 loss_str = "{:10.3f}".format(loss.cpu())
-                str_metrics = {key: "{:10.3f}".format(metrics[key](normal_labels, predicted_classes)) for key in metrics.keys()}
+                str_metrics = {key: "{:10.3f}".format(metrics[key](predicted_classes, normal_labels)) for key in metrics.keys()}
                 str_batch = str(batch_idx + 1)
                 stdout.write(f"\rbatch {str_batch}/{total_batch} ----- loss: {loss_str} ----- {' ----- '.join([f'{key}: {str_metrics[key]}' for key in str_metrics.keys()])}")
                 stdout.flush()
